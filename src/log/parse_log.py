@@ -68,7 +68,10 @@ def process_alignment_stats(log_path, prefix, file_name):
                 if line.startswith("Analysis Date") or \
                     line.startswith("Overlapped") or \
                     line.startswith("Analysis time") or \
-                    line.startswith("Command line arguments"): continue
+                    line.startswith("Command line arguments") or \
+                    line.startswith("Paired-end alignment conflicts eliminated") or \
+                    line.startswith("J gene chimeras") or \
+                    line.startswith("V gene chimeras"): continue
                 if line.startswith("==="):
                     chain_list = ['TRA chains', 'TRB chains', 'TRD chains', 'TRG chains','TRA,TRD chains',
                                     'IGH chains','IGK chains', 'IGL chains']
