@@ -71,7 +71,8 @@ def process_alignment_stats(log_path, prefix, file_name):
                     line.startswith("Command line arguments") or \
                     line.startswith("Paired-end alignment conflicts eliminated") or \
                     line.startswith("J gene chimeras") or \
-                    line.startswith("V gene chimeras"): continue
+                    line.startswith("V gene chimeras") or \
+                    line.startswith("Chimeras"): continue
                 if line.startswith("==="):
                     chain_list = ['TRA chains', 'TRB chains', 'TRD chains', 'TRG chains','TRA,TRD chains',
                                     'IGH chains','IGK chains', 'IGL chains']
