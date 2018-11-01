@@ -162,7 +162,7 @@ def main():
     args = get_options()
     print (args)
     #start alignment thread
-    print ("processing alignemnt stats....")
+    print ("processing alignment stats....")
     align_thread = Thread(target=process_alignment_stats,
                           args=[args.input, args.prefix_align, os.path.join(args.output, args.alignment)])
     align_thread.start()
