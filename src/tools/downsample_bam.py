@@ -71,7 +71,7 @@ def create_master_script(master_file, cmds, num_files, max_workers, num_nodes, r
         of.write("#PBS -e {0}\n".format(os.path.join(output, "%s.err" %job_name)))
         of.write("fail=$(ls -l {0}/*.error |wc -l) || fail=0\n".format(output))
         of.write("complete=$(ls -l {0}/*.complete |wc -l) || complte=0\n".format(output))
-        of.write("while [[ $complete -lt {0} ] && [ $fail -ne 0 ]] ;do\n\tsleep 5\n\tfail=$(ls -l {1}/*.error |wc -l) || fail=0\n\tcomplete=$(ls -l {2}/*.complete |wc -l) || complte=0\ndone\n".format(num_files,output,output))
+        of.write("while [ $complete -lt {0} ] && [ $fail -eq 0 ];do\n\tsleep 5\n\tfail=$(ls -l {1}/*.error |wc -l) || fail=0\n\tcomplete=$(ls -l {2}/*.complete |wc -l) || complte=0\ndone\n".format(num_files,output,output))
         for i in range(0, len(cmds)):
             of.write("{0}\n".format(cmds[i]))
         if remove_files:
