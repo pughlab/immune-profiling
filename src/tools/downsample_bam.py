@@ -5,6 +5,7 @@ import os
 import argparse
 import re
 import time
+import glob
 
 def get_count(bam, max_workers):
     """
@@ -68,11 +69,9 @@ def create_master_script(master_file, cmds, num_files, max_workers, num_nodes, r
         of.write("#PBS -l vmem=8g\n")
         of.write("#PBS -o {0}\n".format(os.path.join(output,"%s.out"%job_name)))
         of.write("#PBS -e {0}\n".format(os.path.join(output, "%s.err" %job_name)))
-        of.write('find %s -name "*.sh" -exec qsub {} \;\n'%(output))
-        of.write("fail=$(ls -l %s/*.error |wc -l) || fail=0\n"%output)
+        of.write("fail=$(ls -l {0}/*.error |wc -l) || fail=0\n".format(output))
         of.write("complete=$(ls -l {0}/*.complete |wc -l) || complte=0\n".format(output))
-        of.write("if [ $fail -ne 0 ]; then\n exit 1 \nfi\n")
-        of.write("while [ $complete -lt %s ];do\n sleep 5\ndone\n"%num_files)
+        of.write("while [[ $complete -lt {0} ] && [ $fail -ne 0 ]] ;do\n\tsleep 5\n\tfail=$(ls -l {1}/*.error |wc -l) || fail=0\n\tcomplete=$(ls -l {2}/*.complete |wc -l) || complte=0\ndone\n".format(num_files,output,output))
         for i in range(0, len(cmds)):
             of.write("{0}\n".format(cmds[i]))
         if remove_files:
@@ -165,6 +164,16 @@ def get_fastq_name(one_bam, paired_bam, total_reads):
     return  ("{0}_{1}_{2}_{3}_{4}".format(one_bam_name, paired_bam_name, seed, dilution1, total_reads),
             seed, "%s,%s"%(dilution1,dilution2), "%s,%s"%(rate1,rate2))
 
+def submit_jobs(script_dir):
+    qsub_scripts = glob.glob(os.path.join(script_dir, "*.sh"))
+    for one_script in qsub_scripts:
+        cmd = "qsub {}".format(one_script)
+        print (cmd)
+        if (os.system(cmd) != 0):
+            print ("Fail to submit job for {}".format(one_script))
+        else:
+            print ("{} Submitted.".format(os.path.basename(one_script)))
+
 def get_options():
     """
     get input options from command line
@@ -248,6 +257,8 @@ if __name__ == '__main__':
                                     rate_str))
 
     #create master qsub script
-    master_file = os.path.join(options.output, "{0}-{1}.sh".format(bam_names[0],bam_names[1]))
-    print (master_file)
+    master_file = os.path.join(script_dir, "{0}-{1}.sh".format(bam_names[0],bam_names[1]))
     create_master_script(master_file, cmds, len(sorted_bams), options.jobs, options.nodes, options.remove_files)
+
+    #submit jobs to the cluster
+    submit_jobs(script_dir)
