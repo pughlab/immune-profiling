@@ -155,11 +155,8 @@ def get_bam_name_parts(one_bam):
     one_bam_parts = one_bam_parts.split("_")
     seed, rate, dilution = one_bam_parts[-3:]
     del one_bam_parts[-3:]
-    if len(one_bam_parts) > 1:
-        one_bam_name = "_".join(one_bam_parts)
-    else:
-        one_bam_parts = one_bam_parts[0]
-
+    one_bam_name = "_".join(one_bam_parts)
+    print (one_bam_name)
     return one_bam_name, seed, rate, dilution
 
 def get_fastq_name(one_bam, paired_bam, total_reads):
