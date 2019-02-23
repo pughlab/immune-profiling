@@ -75,7 +75,8 @@ def create_master_script(master_file, cmds, num_files, max_workers, num_nodes, r
         for i in range(0, len(cmds)):
             of.write("{0}\n".format(cmds[i]))
         if remove_files:
-            of.write("rm {0}".format(os.path.join(output,"*.bam")))
+            bam_path = "/".join(output.split("/")[:-1])
+            of.write("rm {0}".format(os.path.join(bam_path,"*.bam")))
     os.system("chmod 755 %s" % master_file)
 
 def subset(seed, bam, read, output, count, max_workers, num_nodes, qsub_dir):
@@ -245,6 +246,8 @@ if __name__ == '__main__':
             print (one_bam, paired_bam)
             if paired_bam:
                 fq_name, seed_str, dil_str, rate_str = get_fastq_name(one_bam, paired_bam, options.reads)
+                rate_str = ",".join([ "0.%s"%r for r in rate_str.split(",") ])
+
                 print ("concat fastq name: {}".format(fq_name))
                 cmds += get_cat_cmd(one_bam, paired_bam, options.output, fq_name, options.remove_files)
 
