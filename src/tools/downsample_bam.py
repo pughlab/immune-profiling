@@ -146,8 +146,9 @@ def get_cat_cmd(bam, paired_bam, output, fq_name, remove_files=False):
                              os.path.join(output, "%s-%s.fastq" %(fq_name,i))))
 
         if remove_files:
-            cat_cmds.append("if [ $? -eq 0 ]; then\n\trm {0} {1}\nfi\n".format(bam.replace(".bam","-%s.fastq"%i),
-                                                paired_bam.replace(".bam","-%s.fastq"%i)))
+            cat_cmds.append("if [ $? -eq 0 ]; then\n\trm {0} {1}\nfi\n".format(
+                                                os.path.join(output, bam.replace(".bam","-%s.fastq"%i)),
+                                                os.path.join(output, paired_bam.replace(".bam","-%s.fastq"%i))))
     return cat_cmds
 
 def get_bam_name_parts(one_bam):
